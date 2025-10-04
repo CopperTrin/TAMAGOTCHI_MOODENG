@@ -34,6 +34,9 @@
 #include "ILI9341_GFX.h"
 
 #include "snow_tiger.h"
+
+#include "ui_manager.h"
+#include "stm32f7xx_hal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,6 +70,9 @@ const char* stateNames[STATE_COUNT] = {
     "Cleanup",
     "Medicine"
 };
+
+UIManager_t ui;
+uint32_t lastUpdateTime = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -121,9 +127,15 @@ int main(void)
   MX_TIM1_Init();
   MX_RNG_Init();
   /* USER CODE BEGIN 2 */
+
   ILI9341_Init(); // initial driver setup to drive ili9341
-  ILI9341_Set_Rotation(SCREEN_HORIZONTAL_1);
-  Display_Screen();
+  ILI9341_Set_Rotation(SCREEN_VERTICAL_1);
+  ILI9341_Fill_Screen(DARKGREY);
+//  Display_Screen();
+
+  UIManager_Init(&ui);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -132,11 +144,30 @@ int main(void)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-    if (shouldClearScreen)
-    {
-      shouldClearScreen = false;
-      Display_Screen();
-    }
+
+
+//    if (shouldClearScreen)
+//    {
+//      shouldClearScreen = false;
+//      Display_Screen();
+//    }
+
+	  uint32_t currentTime = HAL_GetTick();
+
+      UIManager_Update(&ui, currentTime);
+
+      if (currentTime - lastUpdateTime >= 100) {
+          UIManager_Draw(&ui);
+          lastUpdateTime = currentTime;
+      }
+
+//      // Example of switching menu by button:
+//      if (ButtonPressed(FEED_BUTTON)) {
+//          UIManager_SetState(&ui, MENU_FEED);
+//      } else if (ButtonPressed(PLAY_BUTTON)) {
+//          UIManager_SetState(&ui, MENU_PLAY);
+//      }
+
     /* USER CODE END 3 */
   }
 }
