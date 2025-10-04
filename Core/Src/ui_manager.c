@@ -12,16 +12,19 @@
 #include "ILI9341_GFX.h"
 
 SpriteAnimator_t idleAnim;
+SpriteAnimator_t sleepAnim;
 SpriteAnimator_t eatAnim;
 SpriteAnimator_t playAnim;
 
 void UIManager_Init(UIManager_t* ui)
 {
     static const uint16_t* idleFrames[] = { idle1, idle2, idle3 };
+    static const uint16_t* sleepFrames[] = { sleep_day1, sleep_day2, sleep_night1, sleep_night2};
 //    static const uint16_t* feedFrames[] = { eat1, eat2, eat3 };
 //    static const uint16_t* playFrames[] = { play1, play2, play3 };
 
     SpriteAnimator_Init(&idleAnim, idleFrames, 3, 30, 70, 180, 180, 300);
+    SpriteAnimator_Init(&sleepAnim, sleepFrames, 4, 30, 70, 180, 180, 300);
 //    SpriteAnimator_Init(&eatAnim, feedFrames, 3, 80, 60, 160, 120, 200);
 //    SpriteAnimator_Init(&playAnim, playFrames, 3, 80, 60, 160, 120, 250);
 
@@ -35,7 +38,7 @@ void UIManager_SetState(UIManager_t* ui, MenuState_t newState)
 
     switch (newState) {
         case MENU_FEED: ui->activeAnim = &eatAnim; break;
-        case MENU_PLAY: ui->activeAnim = &playAnim; break;
+        case MENU_SLEEP: ui->activeAnim = &sleepAnim; break;
         default:        ui->activeAnim = &idleAnim; break;
     }
 
