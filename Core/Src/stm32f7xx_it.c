@@ -23,6 +23,8 @@
 #include "stm32f7xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "ui_manager.h"  // <-- Include for MenuState_t and UIManager_t
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,9 +44,11 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern PetState_t currentState;
-extern PetState_t selectNextState;
-extern bool shouldClearScreen; 
+//extern PetState_t currentState;
+//extern PetState_t selectNextState;
+extern bool shouldClearScreen;
+
+extern UIManager_t ui;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,24 +101,11 @@ void EXTI0_IRQHandler(void)
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
-  switch(currentState) {
-    case STATE_IDLE_STATUS:
-        selectNextState = (selectNextState + 1) % STATE_COUNT;  
-        break;
-    case STATE_MEAL:
-        break;
-    case STATE_MINI_GAME:
-        break;
-    case STATE_SLEEP:
-        break;
-    case STATE_CLEANUP:
-        break;
-    case STATE_MEDICINE:
-        break;
-    default:
-        break;
-      }
-      shouldClearScreen = true;
+
+  // Cycle only the highlighted (unconfirmed) menu
+  ui.selectedState = (ui.selectedState + 1) % 6;
+  shouldClearScreen = true;
+
   /* USER CODE END EXTI0_IRQn 1 */
 }
 
@@ -128,8 +119,13 @@ void EXTI3_IRQHandler(void)
   /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
-  currentState = STATE_IDLE_STATUS;
+
+  // Reset selection and confirmed menu to MAIN
+  ui.selectedState = MENU_MAIN;
+  ui.menuState = MENU_MAIN;
+  UIManager_SetState(&ui, MENU_MAIN);
   shouldClearScreen = true;
+
   /* USER CODE END EXTI3_IRQn 1 */
 }
 
@@ -143,25 +139,12 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-  switch(currentState) {
-    case STATE_IDLE_STATUS:
-        currentState = selectNextState;
-        break;
-    case STATE_MEAL:
-        break;
-    case STATE_MINI_GAME:
-        break;
-    case STATE_SLEEP:
-        break;
-    case STATE_CLEANUP:
-        break;
-    case STATE_MEDICINE:
-        break;
-    default:
-        currentState = STATE_IDLE_STATUS;
-        break;
-      }
-      shouldClearScreen = true;
+
+  // Confirm selection → set active menu
+  ui.menuState = ui.selectedState;
+  UIManager_SetState(&ui, ui.menuState);
+  shouldClearScreen = true;
+
   /* USER CODE END EXTI9_5_IRQn 1 */
 }
 

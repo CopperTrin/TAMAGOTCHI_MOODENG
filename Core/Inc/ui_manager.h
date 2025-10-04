@@ -12,7 +12,7 @@
 #include "ILI9341_GFX.h"
 
 typedef enum {
-    MENU_MAIN,
+    MENU_MAIN = 0,
     MENU_FEED,
     MENU_PLAY,
     MENU_SLEEP,
@@ -21,7 +21,8 @@ typedef enum {
 } MenuState_t;
 
 typedef struct {
-    MenuState_t menuState;
+    MenuState_t menuState;       // Confirmed menu (active state)
+    MenuState_t selectedState;   // Currently highlighted but not confirmed
     SpriteAnimator_t* activeAnim;
 } UIManager_t;
 

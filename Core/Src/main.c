@@ -59,17 +59,18 @@
 /* Private variables ---------------------------------------------------------*/
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
-PetState_t currentState = STATE_IDLE_STATUS;
+//PetState_t currentState = STATE_IDLE_STATUS;
 bool shouldClearScreen = false;
-PetState_t selectNextState = STATE_IDLE_STATUS;
-const char* stateNames[STATE_COUNT] = {
-    "Idle",          
-    "Meal Time",
-    "Mini Game",
-    "Sleep",
-    "Cleanup",
-    "Medicine"
-};
+//PetState_t selectNextState = STATE_IDLE_STATUS;
+
+//const char* stateNames[STATE_COUNT] = {
+//    "Idle",
+//    "Meal Time",
+//    "Mini Game",
+//    "Sleep",
+//    "Cleanup",
+//    "Medicine"
+//};
 
 UIManager_t ui;
 uint32_t lastUpdateTime = 0;
@@ -133,7 +134,10 @@ int main(void)
   ILI9341_Fill_Screen(DARKGREY);
 //  Display_Screen();
 
+  /* Initialize UI */
   UIManager_Init(&ui);
+  ui.menuState = MENU_MAIN;      // confirmed state
+  ui.selectedState = MENU_MAIN;  // highlighted state
 
 
   /* USER CODE END 2 */
@@ -159,6 +163,13 @@ int main(void)
       if (currentTime - lastUpdateTime >= 100) {
           UIManager_Draw(&ui);
           lastUpdateTime = currentTime;
+      }
+
+      if (shouldClearScreen)
+      {
+          shouldClearScreen = false;
+          ILI9341_Fill_Screen(DARKGREY);
+          UIManager_Draw(&ui);
       }
 
 //      // Example of switching menu by button:
@@ -228,17 +239,17 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void Display_Screen(void)
-{
-      ILI9341_Fill_Screen(GREEN);
-      if (currentState < STATE_COUNT)
-      {
-        ILI9341_Draw_Text("Current State: ", 5, 10, WHITE, 2, 2);
-        ILI9341_Draw_Text(stateNames[currentState],5, 50, WHITE, 2, 2);
-        ILI9341_Draw_Text("Next State: ", 5, 100, WHITE, 2, 2);
-        ILI9341_Draw_Text(stateNames[selectNextState], 5, 200, WHITE, 2, 2);
-      }
-}
+//void Display_Screen(void)
+//{
+//      ILI9341_Fill_Screen(GREEN);
+//      if (currentState < STATE_COUNT)
+//      {
+//        ILI9341_Draw_Text("Current State: ", 5, 10, WHITE, 2, 2);
+//        ILI9341_Draw_Text(stateNames[currentState],5, 50, WHITE, 2, 2);
+//        ILI9341_Draw_Text("Next State: ", 5, 100, WHITE, 2, 2);
+//        ILI9341_Draw_Text(stateNames[selectNextState], 5, 200, WHITE, 2, 2);
+//      }
+//}
 /* USER CODE END 4 */
 
 /**

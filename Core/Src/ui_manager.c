@@ -49,8 +49,34 @@ void UIManager_Update(UIManager_t* ui, uint32_t currentTime)
 
 void UIManager_Draw(UIManager_t* ui)
 {
-    SpriteAnimator_Draw(ui->activeAnim);
+	// Draw active animation (if any)
+	    if (ui->activeAnim != NULL) {
+	        SpriteAnimator_Draw(ui->activeAnim);
+	    }
 
+	    // Show current confirmed state (active menu)
+	    ILI9341_Draw_Text("Current:", 5, 10, WHITE, 2, BLACK);
+	    switch (ui->menuState) {
+	        case MENU_MAIN:     ILI9341_Draw_Text("Main", 120, 10, YELLOW, 2, BLACK); break;
+	        case MENU_FEED:     ILI9341_Draw_Text("Feed", 120, 10, YELLOW, 2, BLACK); break;
+	        case MENU_PLAY:     ILI9341_Draw_Text("Play", 120, 10, YELLOW, 2, BLACK); break;
+	        case MENU_SLEEP:    ILI9341_Draw_Text("Sleep", 120, 10, YELLOW, 2, BLACK); break;
+	        case MENU_CLEAN:    ILI9341_Draw_Text("Clean", 120, 10, YELLOW, 2, BLACK); break;
+	        case MENU_MEDICINE: ILI9341_Draw_Text("Medicine", 120, 10, YELLOW, 2, BLACK); break;
+	        default:            ILI9341_Draw_Text("Unknown", 120, 10, RED, 2, BLACK); break;
+	    }
+
+	    // Show selected (highlighted but not confirmed yet)
+	    ILI9341_Draw_Text("Selected:", 5, 40, WHITE, 2, BLACK);
+	    switch (ui->selectedState) {
+	        case MENU_MAIN:     ILI9341_Draw_Text("Main", 120, 40, CYAN, 2, BLACK); break;
+	        case MENU_FEED:     ILI9341_Draw_Text("Feed", 120, 40, CYAN, 2, BLACK); break;
+	        case MENU_PLAY:     ILI9341_Draw_Text("Play", 120, 40, CYAN, 2, BLACK); break;
+	        case MENU_SLEEP:    ILI9341_Draw_Text("Sleep", 120, 40, CYAN, 2, BLACK); break;
+	        case MENU_CLEAN:    ILI9341_Draw_Text("Clean", 120, 40, CYAN, 2, BLACK); break;
+	        case MENU_MEDICINE: ILI9341_Draw_Text("Medicine", 120, 40, CYAN, 2, BLACK); break;
+	        default:            ILI9341_Draw_Text("Unknown", 120, 40, RED, 2, BLACK); break;
+	    }
     // Optional: Draw UI icons or stats
 //    ILI9341_Draw_Text("HP:10", 5, 5, WHITE, 1, BLACK);
 //    ILI9341_Draw_Text("Mood:10", 5, 20, WHITE, 1, BLACK);
