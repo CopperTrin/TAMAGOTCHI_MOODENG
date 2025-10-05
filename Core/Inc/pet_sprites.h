@@ -19,7 +19,8 @@ extern const uint16_t sleep_day1[];
 extern const uint16_t sleep_day2[];
 extern const uint16_t sleep_night1[];
 extern const uint16_t sleep_night2[];
-extern const uint16_t* sleepFrames[];
+extern const uint16_t* sleepFramesDay[];
+extern const uint16_t* sleepFramesNight[];
 
 
 #endif /* INC_PET_SPRITES_H_ */

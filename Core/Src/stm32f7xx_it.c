@@ -102,7 +102,7 @@ void EXTI0_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
-  // Cycle only the highlighted (unconfirmed) menu
+  // YELLOW: Cycle only the highlighted (unconfirmed) menu
   ui.selectedState = (ui.selectedState + 1) % 6;
   shouldClearScreen = true;
 
@@ -120,7 +120,7 @@ void EXTI3_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
-  // Reset selection and confirmed menu to MAIN
+  // RED: Reset selection and confirmed menu to MAIN
   ui.selectedState = MENU_MAIN;
   ui.menuState = MENU_MAIN;
   UIManager_SetState(&ui, MENU_MAIN);
@@ -140,7 +140,7 @@ void EXTI9_5_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
-  // Confirm selection → set active menu
+  // BLUE: Confirm selection → set active menu
   ui.menuState = ui.selectedState;
   UIManager_SetState(&ui, ui.menuState);
   shouldClearScreen = true;

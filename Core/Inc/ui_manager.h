@@ -10,6 +10,7 @@
 
 #include "sprite_animator.h"
 #include "ILI9341_GFX.h"
+#include "stdbool.h"
 
 typedef enum {
     MENU_MAIN = 0,
@@ -24,6 +25,8 @@ typedef struct {
     MenuState_t menuState;       // Confirmed menu (active state)
     MenuState_t selectedState;   // Currently highlighted but not confirmed
     SpriteAnimator_t* activeAnim;
+    uint16_t lightLevel;         // Store latest LDR ADC value
+    bool isLightOn;              // Cached state (to avoid flickering)
 } UIManager_t;
 
 void UIManager_Init(UIManager_t* ui);
