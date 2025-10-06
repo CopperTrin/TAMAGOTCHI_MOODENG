@@ -247,41 +247,18 @@ int main(void)
 
     if (currentTime - lastUpdateTime >= 100)
     {
-        /* USER CODE END WHILE */
+        UIManager_Draw(&ui);
+        lastUpdateTime = currentTime;
+    }
 
-        /* USER CODE BEGIN 3 */
+    if (shouldClearScreen)
+    {
+        ILI9341_Draw_Text("Medicine", 120, 10, DARKGREY, 2, DARKGREY);
+        ILI9341_Draw_Text("Medicine", 120, 40, DARKGREY, 2, DARKGREY);
+        shouldClearScreen = false;
+    }
 
-        //    if (shouldClearScreen)
-        //    {
-        //      shouldClearScreen = false;
-        //      Display_Screen();
-        //    }
-
-
-        printValue(moodeng.nextDecayHappy);
-        HAL_Delay(100);
-        uint32_t currentTime = HAL_GetTick();
-    printStatus();
-    HAL_Delay(100);
-    uint32_t currentTime = HAL_GetTick();
-
-        UIManager_Update(&ui, currentTime);
-    UIManager_Update(&ui, currentTime);
-
-        if (currentTime - lastUpdateTime >= 100)
-        {
-            UIManager_Draw(&ui);
-            lastUpdateTime = currentTime;
-        }
-
-       if (shouldClearScreen)
-       {
-           ILI9341_Draw_Text("Medicine", 120, 10, DARKGREY, 2, DARKGREY);
-           ILI9341_Draw_Text("Medicine", 120, 40, DARKGREY, 2, DARKGREY);
-           shouldClearScreen = false;
-       }
-
-        /* USER CODE END 3 */
+    /* USER CODE END 3 */
     }
 }
   /**

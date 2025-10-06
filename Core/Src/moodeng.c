@@ -263,7 +263,7 @@ void Moodeng_Heal(Moodeng_t* moodeng){
         }
         else {
             moodeng->healRate += 0.25;
-            if (moodeng->healRate > 1.0) {moodeng->healRate = 1.0}
+            if (moodeng->healRate > 1.0) {moodeng->healRate = 1.0;}
         }
     }
     else {
@@ -272,25 +272,31 @@ void Moodeng_Heal(Moodeng_t* moodeng){
 }
 
 bool Moodeng_Check_Feed(Moodeng_t* moodeng){
-    if (moodeng.emotion == SCOLDED) return true
-    float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
+    if (moodeng->emotion == SCOLDED) {
+        moodeng->emotion = NORMAL;
+        return true;
+    }
+    float randomProb = (float)Moodeng_GenerateRandomNumber(&moodeng, 0, 100) / 100.0f;
     if (randomProb < Moodeng_FeedingChance(&moodeng)) {
-        return true
+        return true;
     }
     else {
         moodeng->emotion = SILLY;
-        return false
+        return false;
     }
 }
 
-bool Moodeng_Check_Peed(Moodeng_t* moodeng){
-    if (moodeng.emotion == SCOLDED) return true
+bool Moodeng_Check_Play(Moodeng_t* moodeng){
+    if (moodeng->emotion == SCOLDED) {
+        moodeng->emotion = NORMAL;
+        return true;
+    }
     float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
     if (randomProb < Moodeng_PlayingChance(&moodeng)) {
-        return true
+        return true;
     }
     else {
         moodeng->emotion = SILLY;
-        return false
+        return false;
     }
 }

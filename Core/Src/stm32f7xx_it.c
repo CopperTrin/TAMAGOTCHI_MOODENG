@@ -124,18 +124,26 @@ void EXTI0_IRQHandler(void)
       else foodSelected = MEAL;
       break;
 	  case MENU_PLAY:     
-      if(Moodeng_Minigame(&moodeng, 0)) moodeng.happy += 2;
-      else moodeng.happy++;
+      if(Moodeng_Minigame(&moodeng, 0)) {
+        ui.activeAnim = &miniGameCorrectAnim;
+        moodeng.happy += 2;
+      }
+      else {
+        ui.activeAnim = &miniGameWrongAnim;
+        moodeng.happy++;
+      }
       moodeng.weight--;
       moodeng.emotion = NORMAL;
       break;
-	  case MENU_SLEEP:    
+	  case MENU_SLEEP: 
       //Moodeng_Sleep(&moodeng);
       break;
 	  case MENU_CLEAN:    
+      ui.activeAnim = &cleanAnim;
       moodeng.poopCount--;
       break;
 	  case MENU_MEDICINE: 
+      ui.activeAnim = &medicineAnim;
       Moodeng_Heal(&moodeng);
       break;
 	  default:
@@ -186,11 +194,17 @@ void EXTI9_5_IRQHandler(void)
   // (C) BLUE: Confirm selection → set active menu
   switch (ui.menuState) {
 	  case MENU_MAIN:     
-      if(ui.selectedState == MANU_FEED){
-        if(Moodeng_Check_Feed(&moodeng)) UIManager_SetState(&ui, ui.selectedState)
+      if(ui.selectedState == MENU_MAIN){
+        if(Moodeng_Check_Feed(&moodeng)) UIManager_SetState(&ui, ui.selectedState);
+        else {
+          ui.activeAnim = &stubbornAnim;
+        }
       }
-      else if (ui.selectedState == MANU_PLAY){
-        if(Moodeng_Check_Play(&moodeng)) UIManager_SetState(&ui, ui.selectedState)
+      else if (ui.selectedState == MENU_PLAY){
+        if(Moodeng_Check_Play(&moodeng)) UIManager_SetState(&ui, ui.selectedState);
+        else{
+          ui.activeAnim = &stubbornAnim;
+        }
       }
       else {
         UIManager_SetState(&ui, ui.selectedState);
@@ -199,11 +213,13 @@ void EXTI9_5_IRQHandler(void)
       break;
 	  case MENU_FEED:     
       if(foodSelected == MEAL){
+        ui.activeAnim = &feedMealAnim;
         moodeng.hunger += 2;
         moodeng.weight += 2;
         moodeng.poopRate += 0.4;
       }
       else if(foodSelected == SNACK){
+        ui.activeAnim = &feedSnackAnim;
         moodeng.happy += 2;
         moodeng.weight += 4;
         moodeng.poopRate += 0.4;
@@ -211,8 +227,14 @@ void EXTI9_5_IRQHandler(void)
       moodeng.emotion = NORMAL;
       break;
 	  case MENU_PLAY:     
-      if(Moodeng_Minigame(&moodeng, 1)) moodeng.happy += 2;
-      else moodeng.happy++;
+      if(Moodeng_Minigame(&moodeng, 1)) {
+        ui.activeAnim = &miniGameCorrectAnim;
+        moodeng.happy += 2;
+      }
+      else {
+        ui.activeAnim = &miniGameWrongAnim;
+        moodeng.happy++;
+      }
       moodeng.weight--;
       moodeng.emotion = NORMAL;
       break;

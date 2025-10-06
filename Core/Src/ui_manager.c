@@ -25,7 +25,7 @@ SpriteAnimator_t winAnim;
 SpriteAnimator_t loseAnim;
 SpriteAnimator_t miniGameCorrectAnim;
 SpriteAnimator_t miniGameWrongAnim;
-SpriteAnimator_t miniGameSickAnim;
+SpriteAnimator_t sickAnim;
 SpriteAnimator_t stubbornAnim;
 extern ADC_HandleTypeDef hadc1;  // From main.c or auto-generated MX_ADC1_Init()
 extern UART_HandleTypeDef huart3;
@@ -50,7 +50,7 @@ void UIManager_Init(UIManager_t* ui)
     static const uint16_t* loseFrames[] = { lose1 };
     static const uint16_t* miniGameCorrectFrames[] = { correctAnswer1 };
     static const uint16_t* miniGameWrongFrames[] = { wrongAnswer1 };
-    static const uint16_t* miniGameSickFrames[] = { sickness1 };
+    static const uint16_t* sickFrames[] = { sickness1 };
     static const uint16_t* stubbornFrames[] = { stubborn1 };
 
 
@@ -67,7 +67,7 @@ void UIManager_Init(UIManager_t* ui)
     SpriteAnimator_Init(&loseAnim, loseFrames, 1, 30, 70, 180, 180, 300);
     SpriteAnimator_Init(&miniGameCorrectAnim, miniGameCorrectFrames, 1, 30, 70, 180, 180, 300);
     SpriteAnimator_Init(&miniGameWrongAnim, miniGameWrongFrames, 1, 30, 70, 180, 180, 300);
-    SpriteAnimator_Init(&miniGameSickAnim, miniGameSickFrames, 1, 30, 70, 180, 180, 300);
+    SpriteAnimator_Init(&sickAnim, sickFrames, 1, 30, 70, 180, 180, 300);
     SpriteAnimator_Init(&stubbornAnim, stubbornFrames, 1, 30, 70, 180, 180, 300);
 
     SpriteAnimator_Init(&playGameAnim, playGameFrames, 1, 30, 70, 180, 180, 300);
