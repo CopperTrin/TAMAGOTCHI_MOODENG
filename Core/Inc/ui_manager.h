@@ -1,0 +1,37 @@
+/*
+ * ui_manager.h
+ *
+ *  Created on: Oct 4, 2025
+ *      Author: Acer
+ */
+
+#ifndef INC_UI_MANAGER_H_
+#define INC_UI_MANAGER_H_
+
+#include "sprite_animator.h"
+#include "ILI9341_GFX.h"
+#include "stdbool.h"
+
+typedef enum {
+    MENU_MAIN = 0,
+    MENU_FEED,
+    MENU_PLAY,
+    MENU_SLEEP,
+    MENU_CLEAN,
+    MENU_MEDICINE
+} MenuState_t;
+
+typedef struct {
+    MenuState_t menuState;       // Confirmed menu (active state)
+    MenuState_t selectedState;   // Currently highlighted but not confirmed
+    SpriteAnimator_t* activeAnim;
+    uint16_t lightLevel;         // Store latest LDR ADC value
+    bool isLightOn;              // Cached state (to avoid flickering)
+} UIManager_t;
+
+void UIManager_Init(UIManager_t* ui);
+void UIManager_SetState(UIManager_t* ui, MenuState_t newState);
+void UIManager_Update(UIManager_t* ui, uint32_t currentTime);
+void UIManager_Draw(UIManager_t* ui);
+
+#endif /* INC_UI_MANAGER_H_ */
