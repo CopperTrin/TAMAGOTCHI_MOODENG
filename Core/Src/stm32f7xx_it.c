@@ -26,7 +26,9 @@
 
 #include "ui_manager.h"  // <-- Include for MenuState_t and UIManager_t
 #include "timer.h"
-Clock_t gameClock;
+#include "moodeng.h"
+extern Clock_t gameClock;
+extern Moodeng_t moodeng;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

@@ -79,7 +79,7 @@ bool shouldClearScreen = false;
 
 UIManager_t ui;
 Moodeng_t moodeng;
-extern Clock_t gameClock;
+Clock_t gameClock;
 uint32_t lastUpdateTime = 0;
 /* USER CODE END PV */
 
@@ -90,6 +90,57 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void printStatus(void)
+{
+    char msg[512];
+    int n = snprintf(msg, sizeof(msg),
+        "Time: %02d:%02d:%02d\r\n"
+        "Happy: %d\r\n"
+        "Weight: %d\r\n"
+        "Hunger: %d\r\n"
+        "PoopCount: %d\r\n"
+        "PoopRate: %.2f\r\n"
+        "isSick: %d\r\n"
+        "HealRate: %.2f\r\n"
+        "Discipline: %d\r\n"
+        "isTried: %d\r\n"
+        "Evolution: %d\r\n"
+        "isAlive: %d\r\n"
+        "nextDecayHappy: %d\r\n"
+        "nextDecayHunger: %d\r\n"
+        "nextPoopTime: %d\r\n"
+        "nextSickTime: %d\r\n"
+        "nextHurtTime: %d\r\n"
+        "nextDirtyTime: %d\r\n"
+        "nextSleepyTime: %d\r\n"
+        "--------------------------\r\n",
+        gameClock.hour, gameClock.minute, gameClock.second,
+        moodeng.happy,
+        moodeng.weight,
+        moodeng.hunger,
+        moodeng.poopCount,
+        moodeng.poopRate,
+        moodeng.isSick,
+        moodeng.healRate,
+        moodeng.discipline,
+        moodeng.isTried,
+        moodeng.evolution,
+        moodeng.isAlive,
+        moodeng.nextDecayHappy,
+        moodeng.nextDecayHunger,
+        moodeng.nextPoopTime,
+        moodeng.nextSickTime,
+        moodeng.nextHurtTime,
+        moodeng.nextDirtyTime,
+        moodeng.nextSleepyTime
+    );
+
+    if (n > 0)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t *)msg, n, HAL_MAX_DELAY);
+    }
+}
+
 void printValue(int value)
 {
     char msg[32];
@@ -189,7 +240,7 @@ int main(void)
     //      Display_Screen();
     //    }
 
-    printTime(&gameClock);
+    printStatus();
     HAL_Delay(100);
     uint32_t currentTime = HAL_GetTick();
 

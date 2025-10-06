@@ -2,6 +2,10 @@
     "files.associations": {
         "usart.h": "c",
         "timer.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "stm32f7xx_it.h": "c",
+        "main.h": "c",
+        "moodeng.h": "c",
+        "stdbool.h": "c"
     }
 }
