@@ -39,6 +39,7 @@
 
 #include "ui_manager.h"
 #include "moodeng.h"
+#include "timer.h"
 #include "stm32f7xx_hal.h"
 // #include "string.h"
 /* USER CODE END Includes */
@@ -78,6 +79,7 @@ bool shouldClearScreen = false;
 
 UIManager_t ui;
 Moodeng_t moodeng;
+extern Clock_t gameClock;
 uint32_t lastUpdateTime = 0;
 /* USER CODE END PV */
 
@@ -88,12 +90,31 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void printValue(int value)
+{
+    char msg[32];
+    int n = snprintf(msg, sizeof(msg), "Value: %02d\r\n", value);
+    if (n > 0)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t *)msg, n, HAL_MAX_DELAY);
+    }
+}
+
+void printTime(Clock_t *gameClock)
+{
+    char msg[32];
+    int n = snprintf(msg, sizeof(msg), "%02d:%02d:%02d\r", gameClock->hour, gameClock->minute, gameClock->second);
+    if (n > 0)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t *)msg, n, HAL_MAX_DELAY);
+    }
+}
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
 
@@ -134,148 +155,148 @@ int main(void)
   MX_RNG_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+  Moodeng_Init(&moodeng);
+  Timer_Init(&gameClock);
+  ILI9341_Init(); // initial driver setup to drive ili9341
+  ILI9341_Set_Rotation(SCREEN_VERTICAL_1);
+  ILI9341_Fill_Screen(DARKGREY);
+  //  Display_Screen();
 
-    ILI9341_Init(); // initial driver setup to drive ili9341
-    ILI9341_Set_Rotation(SCREEN_VERTICAL_1);
-    ILI9341_Fill_Screen(DARKGREY);
-    //  Display_Screen();
+  UIManager_Init(&ui);
+  ui.menuState = MENU_MAIN;     // confirmed state
+  ui.selectedState = MENU_MAIN; // highlighted state
 
-    UIManager_Init(&ui);
-    ui.menuState = MENU_MAIN;     // confirmed state
-    ui.selectedState = MENU_MAIN; // highlighted state
+  HAL_ADC_Start(&hadc1);
+  HAL_TIM_Base_Start_IT(&htim1);
 
-    HAL_ADC_Start(&hadc1);
-
-    //  if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, ADC_CH_COUNT) != HAL_OK) {
-    //      Error_Handler();
-    //  }
+  //  if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, ADC_CH_COUNT) != HAL_OK) {
+  //      Error_Handler();
+  //  }
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-    while (1)
-    {
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-        //    if (shouldClearScreen)
-        //    {
-        //      shouldClearScreen = false;
-        //      Display_Screen();
-        //    }
+    //    if (shouldClearScreen)
+    //    {
+    //      shouldClearScreen = false;
+    //      Display_Screen();
+    //    }
 
+    printTime(&gameClock);
+    HAL_Delay(100);
+    uint32_t currentTime = HAL_GetTick();
 
-        printValue(moodeng.nextDecayHappy);
-        HAL_Delay(100);
-         uint32_t currentTime = HAL_GetTick();
+    UIManager_Update(&ui, currentTime);
 
-         UIManager_Update(&ui, currentTime);
+    if (currentTime - lastUpdateTime >= 100)
+    {
+      UIManager_Draw(&ui);
+      lastUpdateTime = currentTime;
+    }
 
-         if (currentTime - lastUpdateTime >= 100)
-         {
-             UIManager_Draw(&ui);
-             lastUpdateTime = currentTime;
-         }
+    if (shouldClearScreen)
+    {
+      shouldClearScreen = false;
+      ILI9341_Fill_Screen(LIGHTGREY);
+      UIManager_Draw(&ui);
+    }
 
-         if (shouldClearScreen)
-         {
-             shouldClearScreen = false;
-             ILI9341_Fill_Screen(LIGHTGREY);
-             UIManager_Draw(&ui);
-         }
-
-  /* USER CODE END 3 */
-}
-
-/**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-  /** Configure LSE Drive Capability
-  */
-  HAL_PWR_EnableBkUpAccess();
-
-  /** Configure the main internal regulator output voltage
-  */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 216;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 9;
-  RCC_OscInitStruct.PLL.PLLR = 2;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Activate the Over-Drive mode
-  */
-  if (HAL_PWREx_EnableOverDrive() != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
-  {
-    Error_Handler();
+    /* USER CODE END 3 */
   }
 }
+  /**
+   * @brief System Clock Configuration
+   * @retval None
+   */
+  void SystemClock_Config(void)
+  {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-/* USER CODE BEGIN 4 */
+    /** Configure LSE Drive Capability
+     */
+    HAL_PWR_EnableBkUpAccess();
 
-/* USER CODE END 4 */
+    /** Configure the main internal regulator output voltage
+     */
+    __HAL_RCC_PWR_CLK_ENABLE();
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
+    /** Initializes the RCC Oscillators according to the specified parameters
+     * in the RCC_OscInitTypeDef structure.
+     */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 4;
+    RCC_OscInitStruct.PLL.PLLN = 216;
+    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ = 9;
+    RCC_OscInitStruct.PLL.PLLR = 2;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    /** Activate the Over-Drive mode
+     */
+    if (HAL_PWREx_EnableOverDrive() != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    /** Initializes the CPU, AHB and APB buses clocks
+     */
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7) != HAL_OK)
+    {
+      Error_Handler();
+    }
+  }
+
+  /* USER CODE BEGIN 4 */
+
+  /* USER CODE END 4 */
+
+  /**
+   * @brief  This function is executed in case of error occurrence.
+   * @retval None
+   */
+  void Error_Handler(void)
+  {
+    /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
     while (1)
     {
     }
-  /* USER CODE END Error_Handler_Debug */
-}
+    /* USER CODE END Error_Handler_Debug */
+  }
 #ifdef USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t *file, uint32_t line)
-{
-  /* USER CODE BEGIN 6 */
+  /**
+   * @brief  Reports the name of the source file and the source line number
+   *         where the assert_param error has occurred.
+   * @param  file: pointer to the source file name
+   * @param  line: assert_param error line source number
+   * @retval None
+   */
+  void assert_failed(uint8_t *file, uint32_t line)
+  {
+    /* USER CODE BEGIN 6 */
     /* User can add his own implementation to report the file name and line number,
        tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
-}
+    /* USER CODE END 6 */
+  }
 #endif /* USE_FULL_ASSERT */

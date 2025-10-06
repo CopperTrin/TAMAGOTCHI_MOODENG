@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "usart.h": "c"
+        "usart.h": "c",
+        "timer.h": "c",
+        "stdio.h": "c"
     }
 }

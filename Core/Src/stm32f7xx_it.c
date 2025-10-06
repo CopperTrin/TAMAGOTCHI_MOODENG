@@ -26,7 +26,7 @@
 
 #include "ui_manager.h"  // <-- Include for MenuState_t and UIManager_t
 #include "timer.h"
-
+Clock_t gameClock;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -161,7 +161,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
-  Timer_Update();
+  Timer_Update(&gameClock);
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
 }
 
