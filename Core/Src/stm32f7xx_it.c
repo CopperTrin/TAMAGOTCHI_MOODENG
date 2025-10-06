@@ -101,9 +101,19 @@ void EXTI0_IRQHandler(void)
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
-
-  // YELLOW: Cycle only the highlighted (unconfirmed) menu
-  ui.selectedState = (ui.selectedState + 1) % 6;
+  switch(ui.menuState) {
+      case MENU_MAIN:
+        ui.selectedState = (ui.selectedState + 1) % 6;
+      case MENU_FEED:
+      case MENU_PLAY:
+      case MENU_SLEEP:
+      case MENU_CLEAN:
+      case MENU_MEDICINE:
+          break; // valid states
+      default:
+          ui.menuState = MENU_MAIN; // safety fallback
+          break;
+  }
   shouldClearScreen = true;
 
   /* USER CODE END EXTI0_IRQn 1 */
@@ -121,6 +131,7 @@ void EXTI3_IRQHandler(void)
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   // RED: Reset selection and confirmed menu to MAIN
+
   ui.selectedState = MENU_MAIN;
   ui.menuState = MENU_MAIN;
   UIManager_SetState(&ui, MENU_MAIN);

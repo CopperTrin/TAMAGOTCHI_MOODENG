@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "usart.h": "c"
+        "usart.h": "c",
+        "sprite_animator.h": "c"
     }
 }
