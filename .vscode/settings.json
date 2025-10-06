@@ -6,6 +6,10 @@
         "stm32f7xx_it.h": "c",
         "main.h": "c",
         "moodeng.h": "c",
-        "stdbool.h": "c"
-    }
+        "stdbool.h": "c",
+        "sprite_animator.h": "c",
+        "ui_manager.h": "c",
+        "ili9341_gfx.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

@@ -29,6 +29,13 @@
 #include "moodeng.h"
 extern Clock_t gameClock;
 extern Moodeng_t moodeng;
+
+typedef enum {
+    MEAL = 0,
+    SNACK
+} Food_t;
+Food_t foodSelected = MEAL;
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,8 +114,33 @@ void EXTI0_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
-  // YELLOW: Cycle only the highlighted (unconfirmed) menu
-  ui.selectedState = (ui.selectedState + 1) % 6;
+  // (B) YELLOW: Cycle only the highlighted (unconfirmed) menu
+  switch (ui.menuState) {
+	  case MENU_MAIN:     
+      ui.selectedState = (ui.selectedState + 1) % 6;
+      break;
+	  case MENU_FEED:     
+      if (foodSelected == MEAL) foodSelected = SNACK;
+      else foodSelected = MEAL;
+      break;
+	  case MENU_PLAY:     
+      if(Moodeng_Minigame(&moodeng, 0)) moodeng.happy += 2;
+      else moodeng.happy++;
+      moodeng.weight--;
+      moodeng.emotion = NORMAL;
+      break;
+	  case MENU_SLEEP:    
+      //Moodeng_Sleep(&moodeng);
+      break;
+	  case MENU_CLEAN:    
+      moodeng.poopCount--;
+      break;
+	  case MENU_MEDICINE: 
+      Moodeng_Heal(&moodeng);
+      break;
+	  default:
+      break;
+	}
   shouldClearScreen = true;
 
   /* USER CODE END EXTI0_IRQn 1 */
@@ -125,12 +157,18 @@ void EXTI3_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
-  // RED: Reset selection and confirmed menu to MAIN
-  ui.selectedState = MENU_MAIN;
-  ui.menuState = MENU_MAIN;
-  UIManager_SetState(&ui, MENU_MAIN);
-  shouldClearScreen = true;
-
+  // (A) RED: Reset selection and confirmed menu to MAIN
+  if(ui.menuState != MENU_MAIN){
+    UIManager_SetState(&ui, MENU_MAIN);
+    shouldClearScreen = true;
+  }
+  else if (ui.menuState == MENU_MAIN){
+    if(moodeng.emotion != SILLY) moodeng.happy--;
+    else if(moodeng.emotion == SILLY) {
+      moodeng.discipline++;
+      moodeng.emotion = SCOLDED;
+    }
+  }
   /* USER CODE END EXTI3_IRQn 1 */
 }
 
@@ -145,11 +183,42 @@ void EXTI9_5_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
-  // BLUE: Confirm selection → set active menu
-  ui.menuState = ui.selectedState;
-  UIManager_SetState(&ui, ui.menuState);
-  shouldClearScreen = true;
-
+  // (C) BLUE: Confirm selection → set active menu
+  switch (ui.menuState) {
+	  case MENU_MAIN:     
+      if(ui.selectedState == MANU_FEED){
+        if(Moodeng_Check_Feed(&moodeng)) UIManager_SetState(&ui, ui.selectedState)
+      }
+      else if (ui.selectedState == MANU_PLAY){
+        if(Moodeng_Check_Play(&moodeng)) UIManager_SetState(&ui, ui.selectedState)
+      }
+      else {
+        UIManager_SetState(&ui, ui.selectedState);
+      }
+      shouldClearScreen = true;
+      break;
+	  case MENU_FEED:     
+      if(foodSelected == MEAL){
+        moodeng.hunger += 2;
+        moodeng.weight += 2;
+        moodeng.poopRate += 0.4;
+      }
+      else if(foodSelected == SNACK){
+        moodeng.happy += 2;
+        moodeng.weight += 4;
+        moodeng.poopRate += 0.4;
+      }
+      moodeng.emotion = NORMAL;
+      break;
+	  case MENU_PLAY:     
+      if(Moodeng_Minigame(&moodeng, 1)) moodeng.happy += 2;
+      else moodeng.happy++;
+      moodeng.weight--;
+      moodeng.emotion = NORMAL;
+      break;
+	  default:
+      break;
+	}
   /* USER CODE END EXTI9_5_IRQn 1 */
 }
 

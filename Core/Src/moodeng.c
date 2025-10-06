@@ -247,3 +247,50 @@ void Moodeng_Update(Moodeng_t* moodeng) {
     }
 }
 
+bool Moodeng_Minigame(Moodeng_t* moodeng, int guess){
+    return guess == Moodeng_GenerateRandomNumber(moodeng, 0, 1);
+}
+
+void Moodeng_Sleep(Moodeng_t* moodeng){
+
+}
+
+void Moodeng_Heal(Moodeng_t* moodeng){
+    if (moodeng->isSick){
+        float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
+        if (randomProb < moodeng->healRate) {
+            moodeng->isSick = false;
+        }
+        else {
+            moodeng->healRate += 0.25;
+            if (moodeng->healRate > 1.0) {moodeng->healRate = 1.0}
+        }
+    }
+    else {
+        moodeng->happy--;
+    }
+}
+
+bool Moodeng_Check_Feed(Moodeng_t* moodeng){
+    if (moodeng.emotion == SCOLDED) return true
+    float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
+    if (randomProb < Moodeng_FeedingChance(&moodeng)) {
+        return true
+    }
+    else {
+        moodeng->emotion = SILLY;
+        return false
+    }
+}
+
+bool Moodeng_Check_Peed(Moodeng_t* moodeng){
+    if (moodeng.emotion == SCOLDED) return true
+    float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
+    if (randomProb < Moodeng_PlayingChance(&moodeng)) {
+        return true
+    }
+    else {
+        moodeng->emotion = SILLY;
+        return false
+    }
+}
