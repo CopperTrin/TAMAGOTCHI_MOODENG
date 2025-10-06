@@ -62,8 +62,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
 // PetState_t currentState = STATE_IDLE_STATUS;
 bool shouldClearScreen = false;
 // PetState_t selectNextState = STATE_IDLE_STATUS;
@@ -226,10 +224,11 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+        /* USER CODE END WHILE */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -248,19 +247,42 @@ int main(void)
 
     if (currentTime - lastUpdateTime >= 100)
     {
-      UIManager_Draw(&ui);
-      lastUpdateTime = currentTime;
-    }
+        /* USER CODE END WHILE */
 
-    if (shouldClearScreen)
-    {
-      shouldClearScreen = false;
-      ILI9341_Fill_Screen(LIGHTGREY);
-      UIManager_Draw(&ui);
-    }
+        /* USER CODE BEGIN 3 */
 
-    /* USER CODE END 3 */
-  }
+        //    if (shouldClearScreen)
+        //    {
+        //      shouldClearScreen = false;
+        //      Display_Screen();
+        //    }
+
+
+        printValue(moodeng.nextDecayHappy);
+        HAL_Delay(100);
+        uint32_t currentTime = HAL_GetTick();
+    printStatus();
+    HAL_Delay(100);
+    uint32_t currentTime = HAL_GetTick();
+
+        UIManager_Update(&ui, currentTime);
+    UIManager_Update(&ui, currentTime);
+
+        if (currentTime - lastUpdateTime >= 100)
+        {
+            UIManager_Draw(&ui);
+            lastUpdateTime = currentTime;
+        }
+
+       if (shouldClearScreen)
+       {
+           ILI9341_Draw_Text("Medicine", 120, 10, DARKGREY, 2, DARKGREY);
+           ILI9341_Draw_Text("Medicine", 120, 40, DARKGREY, 2, DARKGREY);
+           shouldClearScreen = false;
+       }
+
+        /* USER CODE END 3 */
+    }
 }
   /**
    * @brief System Clock Configuration
