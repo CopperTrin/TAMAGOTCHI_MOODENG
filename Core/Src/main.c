@@ -79,6 +79,12 @@ UIManager_t ui;
 Moodeng_t moodeng;
 Clock_t gameClock;
 uint32_t lastUpdateTime = 0;
+
+typedef enum {
+    MEAL = 0,
+    SNACK
+} Food_t;
+Food_t foodSelected = MEAL;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -158,6 +164,32 @@ void printTime(Clock_t *gameClock)
         HAL_UART_Transmit(&huart3, (uint8_t *)msg, n, HAL_MAX_DELAY);
     }
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    switch (GPIO_Pin)
+    {
+      case GPIO_PIN_0:
+        Handle_Button_Yellow();
+        break;
+
+      case GPIO_PIN_3:
+        Handle_Button_Red();
+        break;
+
+      case GPIO_PIN_5:
+        Handle_Button_Blue();
+        break;
+
+      default:
+        break;
+    }
+}
+
+void Handle_Button_Yellow(void);
+void Handle_Button_Red(void);
+void Handle_Button_Blue(void);
+
 /* USER CODE END 0 */
 
 /**
@@ -318,6 +350,126 @@ int main(void)
   }
 
   /* USER CODE BEGIN 4 */
+void Handle_Button_Yellow(void)
+  {
+    static uint32_t lastTick = 0;
+    uint32_t now = HAL_GetTick();
+    if (now - lastTick < 200) return; // debounce
+    lastTick = now;
+
+    switch (ui.menuState)
+    {
+      case MENU_MAIN:
+        //select action(menu)
+        ui.selectedState = (ui.selectedState + 1) % 6;
+        //skip select main menu
+        if (ui.selectedState == MENU_MAIN)
+          ui.selectedState = MENU_FEED;
+        break;
+      
+      case MENU_FEED:
+        //select food
+        foodSelected = (foodSelected == MEAL) ? SNACK : MEAL;
+        break;
+
+      case MENU_PLAY:
+        //guess left
+        //return true if win
+        if (Moodeng_Minigame(&moodeng, 0)) {
+          ui.activeAnim = &miniGameCorrectAnim;
+        } 
+        else {
+          ui.activeAnim = &miniGameWrongAnim;
+        }
+        break;
+
+      default:
+        break;
+    }
+    shouldClearScreen = true;
+  }
+
+void Handle_Button_Red(void)
+  {
+    static uint32_t lastTick = 0;
+    uint32_t now = HAL_GetTick();
+    if (now - lastTick < 200) return;
+    lastTick = now;
+
+    if (ui.menuState != MENU_MAIN) {
+        UIManager_SetState(&ui, MENU_MAIN);
+        shouldClearScreen = true;
+    } 
+    //in main menu => scolding
+    else {
+      if (moodeng.emotion != SILLY) moodeng.happy--;
+      else {
+        moodeng.discipline++;
+        moodeng.emotion = SCOLDED;
+      }
+    }
+  }
+
+void Handle_Button_Blue(void)
+{
+  static uint32_t lastTick = 0;
+  uint32_t now = HAL_GetTick();
+  if (now - lastTick < 200) return;
+  lastTick = now;
+
+  switch (ui.menuState)
+  {
+    case MENU_MAIN:
+      if (ui.selectedState == MENU_FEED) {
+        if (Moodeng_Check_Feed(&moodeng))
+            UIManager_SetState(&ui, ui.selectedState);
+        else
+            ui.activeAnim = &stubbornAnim;
+      } 
+      else if (ui.selectedState == MENU_PLAY) {
+        if (Moodeng_Check_Play(&moodeng))
+            UIManager_SetState(&ui, ui.selectedState);
+        else
+            ui.activeAnim = &stubbornAnim;
+      } 
+      else {
+        UIManager_SetState(&ui, ui.selectedState);
+      }
+      shouldClearScreen = true;
+      break;
+
+    case MENU_FEED:
+      if (foodSelected == MEAL) {
+        ui.activeAnim = &feedMealAnim;
+        moodeng.hunger += 2;
+        moodeng.weight += 2;
+        moodeng.poopRate += 0.4f;
+      } 
+      else {
+        ui.activeAnim = &feedSnackAnim;
+        moodeng.happy += 2;
+        moodeng.weight += 4;
+        moodeng.poopRate += 0.6f;
+      }
+      break;
+
+    case MENU_PLAY:
+      if (Moodeng_Minigame(&moodeng, 1)) {
+        ui.activeAnim = &miniGameCorrectAnim;
+        moodeng.happy += 2;
+      } 
+      else {
+        ui.activeAnim = &miniGameWrongAnim;
+        moodeng.happy++;
+      }
+      moodeng.weight--;
+      break;
+
+    default:
+        break;
+  }
+}
+
 
   /* USER CODE END 4 */
 

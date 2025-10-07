@@ -248,7 +248,15 @@ void Moodeng_Update(Moodeng_t* moodeng) {
 }
 
 bool Moodeng_Minigame(Moodeng_t* moodeng, int guess){
-    return guess == Moodeng_GenerateRandomNumber(moodeng, 0, 1);
+    bool win = (guess == Moodeng_GenerateRandomNumber(moodeng, 0, 1);)
+    if (win){
+        moodeng->happy += 2;
+    } 
+    else {
+        moodeng->happy++;
+    }
+    moodeng->weight--;
+    return win;
 }
 
 void Moodeng_Sleep(Moodeng_t* moodeng){
@@ -275,6 +283,9 @@ bool Moodeng_Check_Feed(Moodeng_t* moodeng){
     if (moodeng->emotion == SCOLDED) {
         moodeng->emotion = NORMAL;
         return true;
+    } 
+    else if (moodeng->emotion == SILLY){
+        return false;
     }
     float randomProb = (float)Moodeng_GenerateRandomNumber(&moodeng, 0, 100) / 100.0f;
     if (randomProb < Moodeng_FeedingChance(&moodeng)) {
@@ -291,6 +302,10 @@ bool Moodeng_Check_Play(Moodeng_t* moodeng){
         moodeng->emotion = NORMAL;
         return true;
     }
+    else if (moodeng->emotion == SILLY){
+        return false;
+    }
+
     float randomProb = (float)Moodeng_GenerateRandomNumber(moodeng, 0, 100) / 100.0f;
     if (randomProb < Moodeng_PlayingChance(&moodeng)) {
         return true;

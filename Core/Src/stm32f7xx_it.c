@@ -30,12 +30,6 @@
 extern Clock_t gameClock;
 extern Moodeng_t moodeng;
 
-typedef enum {
-    MEAL = 0,
-    SNACK
-} Food_t;
-Food_t foodSelected = MEAL;
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -115,42 +109,6 @@ void EXTI0_IRQHandler(void)
   /* USER CODE BEGIN EXTI0_IRQn 1 */
 
   // (B) YELLOW: Cycle only the highlighted (unconfirmed) menu
-  switch (ui.menuState) {
-	  case MENU_MAIN:     
-      ui.selectedState = (ui.selectedState + 1) % 6;
-      break;
-	  case MENU_FEED:     
-      if (foodSelected == MEAL) foodSelected = SNACK;
-      else foodSelected = MEAL;
-      break;
-	  case MENU_PLAY:     
-      if(Moodeng_Minigame(&moodeng, 0)) {
-        ui.activeAnim = &miniGameCorrectAnim;
-        moodeng.happy += 2;
-      }
-      else {
-        ui.activeAnim = &miniGameWrongAnim;
-        moodeng.happy++;
-      }
-      moodeng.weight--;
-      moodeng.emotion = NORMAL;
-      break;
-	  case MENU_SLEEP: 
-      //Moodeng_Sleep(&moodeng);
-      break;
-	  case MENU_CLEAN:    
-      ui.activeAnim = &cleanAnim;
-      moodeng.poopCount--;
-      break;
-	  case MENU_MEDICINE: 
-      ui.activeAnim = &medicineAnim;
-      Moodeng_Heal(&moodeng);
-      break;
-	  default:
-      break;
-	}
-  shouldClearScreen = true;
-
   /* USER CODE END EXTI0_IRQn 1 */
 }
 
@@ -166,17 +124,6 @@ void EXTI3_IRQHandler(void)
   /* USER CODE BEGIN EXTI3_IRQn 1 */
 
   // (A) RED: Reset selection and confirmed menu to MAIN
-  if(ui.menuState != MENU_MAIN){
-    UIManager_SetState(&ui, MENU_MAIN);
-    shouldClearScreen = true;
-  }
-  else if (ui.menuState == MENU_MAIN){
-    if(moodeng.emotion != SILLY) moodeng.happy--;
-    else if(moodeng.emotion == SILLY) {
-      moodeng.discipline++;
-      moodeng.emotion = SCOLDED;
-    }
-  }
   /* USER CODE END EXTI3_IRQn 1 */
 }
 
@@ -192,55 +139,6 @@ void EXTI9_5_IRQHandler(void)
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
 
   // (C) BLUE: Confirm selection → set active menu
-  switch (ui.menuState) {
-	  case MENU_MAIN:     
-      if(ui.selectedState == MENU_MAIN){
-        if(Moodeng_Check_Feed(&moodeng)) UIManager_SetState(&ui, ui.selectedState);
-        else {
-          ui.activeAnim = &stubbornAnim;
-        }
-      }
-      else if (ui.selectedState == MENU_PLAY){
-        if(Moodeng_Check_Play(&moodeng)) UIManager_SetState(&ui, ui.selectedState);
-        else{
-          ui.activeAnim = &stubbornAnim;
-        }
-      }
-      else {
-        UIManager_SetState(&ui, ui.selectedState);
-      }
-      shouldClearScreen = true;
-      break;
-	  case MENU_FEED:     
-      if(foodSelected == MEAL){
-        ui.activeAnim = &feedMealAnim;
-        moodeng.hunger += 2;
-        moodeng.weight += 2;
-        moodeng.poopRate += 0.4;
-      }
-      else if(foodSelected == SNACK){
-        ui.activeAnim = &feedSnackAnim;
-        moodeng.happy += 2;
-        moodeng.weight += 4;
-        moodeng.poopRate += 0.4;
-      }
-      moodeng.emotion = NORMAL;
-      break;
-	  case MENU_PLAY:     
-      if(Moodeng_Minigame(&moodeng, 1)) {
-        ui.activeAnim = &miniGameCorrectAnim;
-        moodeng.happy += 2;
-      }
-      else {
-        ui.activeAnim = &miniGameWrongAnim;
-        moodeng.happy++;
-      }
-      moodeng.weight--;
-      moodeng.emotion = NORMAL;
-      break;
-	  default:
-      break;
-	}
   /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
