@@ -1,6 +1,8 @@
 #include "moodeng.h"
 #include <stdbool.h>
 #include "rng.h"
+#include "ui_manager.h"
+extern UIManager_t ui
 
 // Default starting stats (easier tuning)
 #define MOODENG_INIT_HAPPY        2
@@ -42,10 +44,10 @@ void Moodeng_Init(Moodeng_t* moodeng) {
     moodeng->emotion = MOODENG_INIT_EMOTION;
     moodeng->nextDecayHappy = Moodeng_GenerateRandomNumber(moodeng, START_DECAY_HAPPY, END_DECAY_HAPPY);
     moodeng->nextDecayHunger = Moodeng_GenerateRandomNumber(moodeng, START_DECAY_HUNGER, END_DECAY_HUNGER);
-    moodeng->nextPoopTime = NULL;
+    moodeng->nextPoopTime = -1;
     moodeng->nextSickTime = MOODENG_INIT_SICKTIME;
-    moodeng->nextHurtTime = NULL;
-    moodeng->nextDirtyTime = NULL;
+    moodeng->nextHurtTime = -1;
+    moodeng->nextDirtyTime = -1;
     moodeng->nextSleepyTime = MOODENG_INIT_SLEEPYTIME;
 }
 
@@ -157,7 +159,7 @@ void checkEvolution(Moodeng_t* moodeng, Clock_t* gameClock) {
 
         case 3:
             if (moodeng->happy == 6) {
-                //win
+                ui.activeAnim = &winAnim
             }
             break;
 
@@ -174,6 +176,7 @@ static void Moodeng_HandleDecay(int* timer, int* stat, int minRand, int maxRand,
             if (*stat <= 0) {
                 *stat = 0;
                 moodeng->isAlive = false;
+                ui.activeAnim = &loseAnim;
             }
             *timer = Moodeng_GenerateRandomNumber(moodeng, minRand, maxRand);
         }
@@ -181,11 +184,8 @@ static void Moodeng_HandleDecay(int* timer, int* stat, int minRand, int maxRand,
 }
 
 void Moodeng_Update(Moodeng_t* moodeng) {
-    //Happy, Hunger
-    Moodeng_HandleDecay(&moodeng->nextDecayHappy, &moodeng->happy, START_DECAY_HAPPY, END_DECAY_HAPPY, moodeng);
-    Moodeng_HandleDecay(&moodeng->nextDecayHunger, &moodeng->hunger, START_DECAY_HUNGER, END_DECAY_HUNGER, moodeng);
     //poop
-    if (moodeng->nextPoopTime == NULL && moodeng->poopRate > 0.0f) {
+    if (moodeng->nextPoopTime == -1 && moodeng->poopRate > 0.0f) {
         moodeng->nextPoopTime = Moodeng_GenerateRandomNumber(moodeng, START_POOPTIME, END_POOPTIME);
     }
     if (moodeng->nextPoopTime > 0) {
@@ -196,11 +196,11 @@ void Moodeng_Update(Moodeng_t* moodeng) {
             if (randomProb < moodeng->poopRate) {
                 moodeng->poopCount++;
                 if (moodeng->poopCount > 6) moodeng->poopCount = 6;
-                moodeng->nextPoopTime = NULL;
+                moodeng->nextPoopTime = -1;
             } else {
                 moodeng->poopRate += 0.2f;
                 if (moodeng->poopRate > 1.0f) moodeng->poopRate = 1.0f;
-                moodeng->nextPoopTime = NULL;   
+                moodeng->nextPoopTime = Moodeng_GenerateRandomNumber(moodeng, START_POOPTIME, END_POOPTIME);  
             }
         }
     }
@@ -218,7 +218,7 @@ void Moodeng_Update(Moodeng_t* moodeng) {
         }
     }
     //hurt
-    if (moodeng->isSick == true && moodeng->nextHurtTime != NULL && moodeng->nextHurtTime > 0){
+    if (moodeng->isSick == true && moodeng->nextHurtTime > 0){
         moodeng->nextHurtTime--;
         if (moodeng->nextHurtTime == 0) {
             moodeng->happy--;
@@ -227,10 +227,10 @@ void Moodeng_Update(Moodeng_t* moodeng) {
         }
     }
     //dirty
-    if (moodeng->poopCount >= 2 && moodeng->nextDirtyTime == NULL) {
+    if (moodeng->poopCount >= 2 && moodeng->nextDirtyTime == -1) {
         moodeng->nextDirtyTime = MOODENG_DIRTY_TIME;
     }
-    if (moodeng->nextDirtyTime != NULL && moodeng->nextDirtyTime > 0 && moodeng->poopCount >= 2) {
+    if (moodeng->nextDirtyTime > 0 && moodeng->poopCount >= 2) {
         moodeng->nextDirtyTime--;
         if (moodeng->nextDirtyTime == 0){
             moodeng->happy -= moodeng->poopCount-1;
@@ -245,6 +245,9 @@ void Moodeng_Update(Moodeng_t* moodeng) {
             moodeng->nextDirtyTime = MOODENG_INIT_SLEEPYTIME;
         } 
     }
+    //Happy, Hunger
+    Moodeng_HandleDecay(&moodeng->nextDecayHappy, &moodeng->happy, START_DECAY_HAPPY, END_DECAY_HAPPY, moodeng);
+    Moodeng_HandleDecay(&moodeng->nextDecayHunger, &moodeng->hunger, START_DECAY_HUNGER, END_DECAY_HUNGER, moodeng);
 }
 
 bool Moodeng_Minigame(Moodeng_t* moodeng, int guess){
