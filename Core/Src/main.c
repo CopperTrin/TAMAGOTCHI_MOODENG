@@ -395,7 +395,7 @@ void Handle_Button_Red(void)
     uint32_t now = HAL_GetTick();
     if (now - lastTick < 200) return;
     lastTick = now;
-
+    //back to main menu
     if (ui.menuState != MENU_MAIN) {
         UIManager_SetState(&ui, MENU_MAIN);
         shouldClearScreen = true;
@@ -419,13 +419,16 @@ void Handle_Button_Blue(void)
 
   switch (ui.menuState)
   {
+    //confirm switch menu
     case MENU_MAIN:
+      //check if moodeng agree to feeding (not if it goes silly)
       if (ui.selectedState == MENU_FEED) {
         if (Moodeng_Check_Feed(&moodeng))
             UIManager_SetState(&ui, ui.selectedState);
         else
             ui.activeAnim = &stubbornAnim;
       } 
+      //check if moodeng agree to playing (not if it goes silly)
       else if (ui.selectedState == MENU_PLAY) {
         if (Moodeng_Check_Play(&moodeng))
             UIManager_SetState(&ui, ui.selectedState);
@@ -439,12 +442,14 @@ void Handle_Button_Blue(void)
       break;
 
     case MENU_FEED:
+      //feed meal
       if (foodSelected == MEAL) {
         ui.activeAnim = &feedMealAnim;
         moodeng.hunger += 2;
         moodeng.weight += 2;
         moodeng.poopRate += 0.4f;
       } 
+      //feed snack
       else {
         ui.activeAnim = &feedSnackAnim;
         moodeng.happy += 2;
@@ -454,19 +459,18 @@ void Handle_Button_Blue(void)
       break;
 
     case MENU_PLAY:
+      //guess right
+      //return true if win
       if (Moodeng_Minigame(&moodeng, 1)) {
         ui.activeAnim = &miniGameCorrectAnim;
-        moodeng.happy += 2;
-      } 
+      }
       else {
         ui.activeAnim = &miniGameWrongAnim;
-        moodeng.happy++;
       }
-      moodeng.weight--;
       break;
 
     default:
-        break;
+      break;
   }
 }
 
