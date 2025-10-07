@@ -19,8 +19,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h \
- ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc.h \
- ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h \
@@ -34,16 +32,12 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h \
- ../Core/Inc/adc.h ../Core/Inc/main.h ../Core/Inc/dma.h ../Core/Inc/rng.h \
- ../Core/Inc/spi.h ../Core/Inc/tim.h ../Core/Inc/usart.h \
- ../Core/Inc/gpio.h \
- C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_Touchscreen.h \
- C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_STM32_Driver.h \
- C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_GFX.h \
- C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/snow_tiger.h \
- ../Core/Inc/ui_manager.h ../Core/Inc/sprite_animator.h \
- ../Core/Inc/moodeng.h ../Core/Inc/timer.h ../Core/Inc/rng.h \
- ../Core/Inc/timer.h
+ ../Core/Inc/rng.h ../Core/Inc/main.h ../Core/Inc/spi.h ../Core/Inc/tim.h \
+ ../Core/Inc/usart.h ../Core/Inc/gpio.h \
+ C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_Touchscreen.h \
+ C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_STM32_Driver.h \
+ C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_GFX.h \
+ C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/snow_tiger.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h:
 ../Core/Inc/stm32f7xx_hal_conf.h:
@@ -65,8 +59,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_dma_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_cortex.h:
-../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc.h:
-../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_adc_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_flash_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c.h:
@@ -80,21 +72,13 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h:
-../Core/Inc/adc.h:
-../Core/Inc/main.h:
-../Core/Inc/dma.h:
 ../Core/Inc/rng.h:
+../Core/Inc/main.h:
 ../Core/Inc/spi.h:
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_Touchscreen.h:
-C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_STM32_Driver.h:
-C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_GFX.h:
-C:/Users/ken717/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/snow_tiger.h:
-../Core/Inc/ui_manager.h:
-../Core/Inc/sprite_animator.h:
-../Core/Inc/moodeng.h:
-../Core/Inc/timer.h:
-../Core/Inc/rng.h:
-../Core/Inc/timer.h:
+C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_Touchscreen.h:
+C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_STM32_Driver.h:
+C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/ILI9341_GFX.h:
+C:/Users/HP/STM32CubeIDE/workspace_1.19.0/767_SPI_ILI9341_2/Drivers/ILI9341/snow_tiger.h:
