@@ -2,8 +2,6 @@
 
 A virtual pet game inspired by the classic 1996 Tamagotchi, featuring Thailand's beloved pygmy hippo "Moo Deng" from Khao Kiew Open Zoo. Built on STM32F767ZI microcontroller as part of the Microcontroller Application Development course.
 
-![Tamagotchi Moodeng](assets/preview.jpg)
-
 ## 📖 About
 
 Tamagotchi Moodeng is an interactive embedded system project that simulates raising a virtual pet. Players care for Moo Deng by feeding, playing games, cleaning up, and ensuring proper rest. The pet's growth and survival depend on your care decisions, creating an engaging bond between player and character.
